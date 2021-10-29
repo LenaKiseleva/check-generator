@@ -82,12 +82,12 @@ class PDFChecksAPIView(GenericAPIView):
         if not check:
             return JsonResponse(
                 {'error': "Данного чека не существует"},
-                status=400
+                status=status.HTTP_400_BAD_REQUEST,
             )
         if not check.pdf_file:
             return JsonResponse(
                 {'error': "Для данного чека не сгенерирован PDF-файл"},
-                status=400
+                status=status.HTTP_400_BAD_REQUEST,
             )
         check.status = settings.PRINTED
         check.save()
