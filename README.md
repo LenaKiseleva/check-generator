@@ -28,7 +28,7 @@ sudo docker-compose up -d --build
 
 **Например**
 ```bash
-# Переменные для базы данных
+# Переменные для PostgreSQL
 # DATABASE_URL=psql://<имя_пользователя>:<пароль>@<host>:<port>/<имя_базы_данных>
 
 DATABASE_URL=psql://postgres_user:xxxyyyzzz@127.0.0.1:5432/postgres1
@@ -36,9 +36,10 @@ SECRET_KEY='vn&#d#fn%-6ccri7jji=%(n#&)7$$uy9o$k)+(icrqw%^h_tyz'
 HOST='localhost'
 PORT=6379
 
-# Пароль устанавливается через 
+# Пароль для Redis
 # sudo nano /etc/redis/redis.conf
 # requirepass 123456789
+
 RQ_DB=0
 RQ_PASSWORD='123456789'
 RQ_DEFAULT_TIMEOUT=360
