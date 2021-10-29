@@ -1,8 +1,14 @@
 import os
 
+import environ
+
+env = environ.Env()
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'vn&#d#fn%-6ccri7jji=%(n#&)7$$uy9o$k)+(icrqw%^h_n3f'
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 
@@ -15,8 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'api.ApiConfig',
+    'rest_framework',
+    'django_rq',
+    'wkhtmltopdf',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -34,7 +42,7 @@ ROOT_URLCONF = 'check_generator.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -51,11 +59,25 @@ WSGI_APPLICATION = 'check_generator.wsgi.application'
 
 
 DATABASES = {
+    'default': env.db(),
+}
+
+RQ_QUEUES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'HOST': env('HOST'),
+        'PORT': env('PORT'),
+        'DB': env('RQ_DB'),
+        'PASSWORD': env('RQ_PASSWORD'),
+        'DEFAULT_TIMEOUT': env('RQ_DEFAULT_TIMEOUT'),
     }
 }
+
+HTMLTOPDF_WORKER = {
+    'HOST': env('HOST'),
+    'PORT': env('PORT'),
+}
+
+WKHTMLTOPDF_CMD = '/usr/bin/wkhtmltopdf'
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -88,5 +110,18 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, '')
+
+
+# Типы чеков
+KITCHEN = 'kitchen'
+CLIENT = 'client'
+
+# Статусы чеков
+NEW = 'new'
+RENDERED = 'rendered'
+PRINTED = 'printed'
