@@ -23,6 +23,22 @@ pip install -r requirements.txt
 ```bash
 sudo docker-compose up -d --build
 ```
+Создайте .env файл с переменными окружения:
+
+
+**Например**
+```bash
+# Переменные для базы данных
+# DATABASE_URL=psql://<имя_пользователя>:<пароль>@<host>:<port>/<имя_базы_данных>
+
+DATABASE_URL=psql://postgres_user:xxxyyyzzz@127.0.0.1:5432/postgres1
+SECRET_KEY='vn&#d#fn%-6ccri7jji=%(n#&)7$$uy9o$k)+(icrqw%^h_tyz'
+HOST='localhost'
+PORT=6379
+RQ_DB=0
+RQ_PASSWORD='123456789'
+RQ_DEFAULT_TIMEOUT=360
+```
 Примените миграции и создайте суперюзера:
 ```bash
 python manage.py makemigrations api
