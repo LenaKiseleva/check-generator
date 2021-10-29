@@ -31,7 +31,7 @@ python manage.py createsuperuser
 ```
 Примените fixtures:
 ```bash
-python manage.py loaddata api/fixtures/initial_data.json
+python manage.py loaddata fixtures/initial_data.json
 ```
 Запустите django-rq:
 ```bash
