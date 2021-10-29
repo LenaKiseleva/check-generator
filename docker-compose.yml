@@ -1,0 +1,26 @@
+version: '3.3'
+
+services:
+
+    db:
+      image: postgres:latest
+      volumes:
+        - postgres_data:/var/lib/postgresql/data/
+      restart: always
+      env_file:
+        - ./.env
+
+    wkhtmltopdf:
+      image: openlabs/docker-wkhtmltopdf-aas:latest
+      ports:
+        - "8222:6379"
+      restart: always
+
+    redis:
+      image: redis:latest
+      ports:
+        - "8080:80"
+      restart: always
+
+volumes:
+  postgres_data:
