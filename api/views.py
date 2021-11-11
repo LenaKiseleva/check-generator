@@ -24,7 +24,7 @@ class CreateChecksAPIView(CreateAPIView):
         point_id = content.pop('point_id')
         printers = Printer.objects.filter(point_id=point_id)
         if printers:
-            if checks is False:
+            if not checks:
                 for printer in printers:
                     check = Check.objects.create(
                         printer_id=printer,
@@ -34,7 +34,7 @@ class CreateChecksAPIView(CreateAPIView):
                     queue = django_rq.get_queue('default')
                     create_pdf_file(check.id)
                 return JsonResponse(
-                    {'ok': "Чеки успешно созданы"},
+                    {'ok': 'Чеки успешно созданы'},
                     status=status.HTTP_200_OK
                 )
             return JsonResponse(
@@ -42,7 +42,7 @@ class CreateChecksAPIView(CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         return JsonResponse(
-            {'error': 'Для данной точке не настроено ни одного принтера'},
+            {'error': 'Для данной точки не настроено ни одного принтера'},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -51,7 +51,8 @@ class NewChecksAPIView(ListAPIView):
     queryset = Check.objects.all()
     serializer_class = ChecksSerializer
 
-    def get(self, request, api_key):
+    def get(self, request, **kwargs):
+        api_key = kwargs.get('api_key')
         try:
             printer = get_object_or_404(Printer, api_key=api_key)
             if printer:
@@ -72,21 +73,23 @@ class PDFChecksAPIView(GenericAPIView):
     queryset = Check.objects.all()
     serializer_class = ChecksSerializer
 
-    def get(self, request, api_key, check_id):
+    def get(self, request, **kwargs):
+        api_key = kwargs.get('api_key')
+        check_id = kwargs.get('check_id')
         if not Printer.objects.filter(api_key=api_key).exists():
             return JsonResponse(
-                {'error': "Не существует принтера с таким api_key"},
+                {'error': 'Не существует принтера с таким api_key'},
                 status=401
             )
         check = Check.objects.filter(id=check_id).first()
         if not check:
             return JsonResponse(
-                {'error': "Данного чека не существует"},
+                {'error': 'Данного чека не существует'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         if not check.pdf_file:
             return JsonResponse(
-                {'error': "Для данного чека не сгенерирован PDF-файл"},
+                {'error': 'Для данного чека не сгенерирован PDF-файл'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         check.status = settings.PRINTED
