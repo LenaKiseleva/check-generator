@@ -21,9 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
     'django_rq',
-    'wkhtmltopdf',
+
     'api.apps.ApiConfig',
 ]
 
@@ -115,13 +116,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '')
-
-
-# Типы чеков
-KITCHEN = 'kitchen'
-CLIENT = 'client'
-
-# Статусы чеков
-NEW = 'new'
-RENDERED = 'rendered'
-PRINTED = 'printed'
