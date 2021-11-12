@@ -9,12 +9,12 @@ urlpatterns = [
         name='create_checks',
     ),
     path(
-        'new_checks/<str:api_key>/',
+        'new_checks/',
         NewChecksAPIView.as_view(),
         name='new_checks',
     ),
     path(
-        'check/<str:api_key>/<int:check_id>/',
+        'check/',
         PDFChecksAPIView.as_view(),
         name='check',
     ),
