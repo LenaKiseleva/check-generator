@@ -32,7 +32,7 @@ class CreateChecksAPIView(CreateAPIView):
                         order=content,
                     )
                     queue = django_rq.get_queue('default')
-                    create_pdf_file(check.id)
+                    create_pdf_file.delay(check.id)
                 return JsonResponse(
                     {'ok': 'Чеки успешно созданы'},
                     status=status.HTTP_200_OK
@@ -51,9 +51,9 @@ class NewChecksAPIView(ListAPIView):
     queryset = Check.objects.all()
     serializer_class = ChecksSerializer
 
-    def get(self, request, **kwargs):
-        api_key = kwargs.get('api_key')
+    def get(self, request):
         try:
+            api_key = request.query_params['api_key']
             printer = get_object_or_404(Printer, api_key=api_key)
             if printer:
                 checks = printer.checks.filter(status=settings.NEW)
@@ -73,9 +73,9 @@ class PDFChecksAPIView(GenericAPIView):
     queryset = Check.objects.all()
     serializer_class = ChecksSerializer
 
-    def get(self, request, **kwargs):
-        api_key = kwargs.get('api_key')
-        check_id = kwargs.get('check_id')
+    def get(self, request):
+        api_key = request.query_params['api_key']
+        check_id = request.query_params['check_id']
         if not Printer.objects.filter(api_key=api_key).exists():
             return JsonResponse(
                 {'error': 'Не существует принтера с таким api_key'},
@@ -94,9 +94,7 @@ class PDFChecksAPIView(GenericAPIView):
             )
         check.status = settings.PRINTED
         check.save()
-        response = HttpResponse(
-            check.pdf_file.path,
-            content_type='application/pdf',
-        )
-        response['Content-Disposition'] = 'attachment; filename=pdf_file'
+        response = HttpResponse(check.pdf_file, content_type='application/pdf')
+        name = check.pdf_file.name
+        response['Content-Disposition'] = 'attachment; filename="' + name + '"'
         return response
