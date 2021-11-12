@@ -14,7 +14,7 @@ admin.site.register(Printer, PrinterAdmin)
 
 
 class CheckAdmin(admin.ModelAdmin):
-    list_display = ('printer_id', 'defined_type',
+    list_display = ('id', 'printer_id', 'defined_type',
                     'order', 'status', 'pdf_file')
     list_filter = ('printer_id', 'defined_type', 'status', )
     search_fields = ('printer_id', 'defined_type', 'status', )
