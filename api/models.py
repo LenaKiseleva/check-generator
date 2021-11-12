@@ -1,17 +1,21 @@
-from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
 class Choice(models.Model):
+    KITCHEN = 'kitchen'
+    CLIENT = 'client'
     CHECK_TYPES = [
-        (settings.CLIENT, 'client'),
-        (settings.KITCHEN, 'kitchen'),
+        (CLIENT, 'client'),
+        (KITCHEN, 'kitchen'),
     ]
+    NEW = 'new'
+    RENDERED = 'rendered'
+    PRINTED = 'printed'
     CHECK_STATUSES = [
-        (settings.NEW, 'new'),
-        (settings.RENDERED, 'rendered'),
-        (settings.PRINTED, 'printed'),
+        (NEW, 'new'),
+        (RENDERED, 'rendered'),
+        (PRINTED, 'printed'),
     ]
 
 
@@ -68,7 +72,7 @@ class Check(models.Model):
         verbose_name='Статус чека',
         max_length=50,
         choices=Choice.CHECK_STATUSES,
-        default=settings.NEW,
+        default=Choice.NEW,
     )
     pdf_file = models.FileField(
         verbose_name='Ссылка на созданный PDF-файл',

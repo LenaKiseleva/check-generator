@@ -1,14 +1,13 @@
 import json
 
 import django_rq
-from django.conf import settings
 from django.db import transaction
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 
-from .models import Check, Printer
+from .models import Check, Choice, Printer
 from .serializers import ChecksSerializer, CreateChecksSerializer
 from .utils import create_pdf_file
 
@@ -56,7 +55,7 @@ class NewChecksAPIView(ListAPIView):
             api_key = request.query_params['api_key']
             printer = get_object_or_404(Printer, api_key=api_key)
             if printer:
-                checks = printer.checks.filter(status=settings.NEW)
+                checks = printer.checks.filter(status=Choice.NEW)
                 serializer = ChecksSerializer(checks, many=True)
                 return JsonResponse(
                     {'checks': serializer.data},
@@ -92,7 +91,7 @@ class PDFChecksAPIView(GenericAPIView):
                 {'error': 'Для данного чека не сгенерирован PDF-файл'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        check.status = settings.PRINTED
+        check.status = Choice.PRINTED
         check.save()
         response = HttpResponse(check.pdf_file, content_type='application/pdf')
         name = check.pdf_file.name
