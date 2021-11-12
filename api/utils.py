@@ -1,10 +1,16 @@
 import os
 
-import wkhtmltopdf
+import pdfkit
 from django.conf import settings
+from django.template.loader import get_template
 from django_rq import job
 
 from api.models import Check
+
+
+def render_html(path: str, params: dict):
+    template = get_template(path)
+    return template.render(params)
 
 
 @job
@@ -16,10 +22,10 @@ def create_pdf_file(id):
         check.status = settings.RENDERED
         check.save()
         return
-    rendered_html = f'templates/{check.defined_type.lower()}_check.html'
-    wkhtmltopdf.wkhtmltopdf(pages=[rendered_html],
-                            output=filename,
-                            orientation='Landscape')
+    template = f'{check.defined_type.lower()}_check.html'
+    context = {'order': check.order}
+    html = render_html(template, context)
+    pdfkit.from_string(html, filename)
     check.pdf_file.name = filename
     check.status = settings.RENDERED
     check.save()
