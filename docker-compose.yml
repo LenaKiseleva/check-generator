@@ -4,11 +4,17 @@ services:
 
     db:
       image: postgres:latest
+      container_name: db
+      environment:
+      - POSTGRES_PASSWORD=xxxyyyzzz
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_DB=postgres1 
       volumes:
         - postgres_data:/var/lib/postgresql/data/
       restart: always
       env_file:
-        - ./.env
+        - .env
+
 
     wkhtmltopdf:
       image: openlabs/docker-wkhtmltopdf-aas:latest
